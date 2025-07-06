@@ -502,8 +502,8 @@
             
             .header h1 {
                 font-size: 2rem;
-            }
-            
+        }
+
             .tabs {
                 flex-direction: column;
             }
@@ -521,11 +521,11 @@
             <p>Manage your paint collection with QR codes</p>
         </div>
 
-        <div class="tabs">
+            <div class="tabs">
             <button class="tab active" onclick="switchTab('asset')">🎨 Add Paint</button>
             <button class="tab" onclick="switchTab('text')">📝 Text QR</button>
             <button class="tab" onclick="switchTab('inventory')">📋 Paint Inventory</button>
-        </div>
+            </div>
 
         <div class="card">
             <div id="asset-tab" class="tab-content active">
@@ -533,8 +533,8 @@
                     <h2>Add New Paint</h2>
                 </div>
                 <div class="card-body">
-                    <form id="asset-form">
-                        <div class="form-group">
+                <form id="asset-form">
+                    <div class="form-group">
                             <label for="asset-name">Paint Name</label>
                             <input type="text" id="asset-name" name="name" placeholder="e.g., Cadmium Red, Ultramarine Blue" required>
                         </div>
@@ -546,8 +546,8 @@
                                 <option value="1Shot Paints">1Shot Paints</option>
                                 <option value="Alphanmel">Alphanmel</option>
                             </select>
-                        </div>
-                        <div class="form-group">
+                    </div>
+                    <div class="form-group">
                             <label for="paint-size">Paint Size</label>
                             <select id="paint-size" name="size" required>
                                 <option value="">Select Size</option>
@@ -557,16 +557,16 @@
                                 <option value="1 US Pint">1 US Pint</option>
                                 <option value="One Quart">One Quart</option>
                             </select>
-                        </div>
-                        <div class="form-group">
+                    </div>
+                    <div class="form-group">
                             <label for="asset-description">Additional Notes</label>
                             <textarea id="asset-description" name="description" rows="3" placeholder="e.g., High gloss finish, excellent coverage, fast drying"></textarea>
-                        </div>
+                    </div>
                         <button type="submit" class="btn">
                             <span id="asset-btn-text">Add Paint & Generate QR</span>
                             <span id="asset-btn-loading" class="loading" style="display: none;"></span>
                         </button>
-                    </form>
+                </form>
                 </div>
             </div>
 
@@ -575,10 +575,10 @@
                     <h2>Generate QR Code for Text</h2>
                 </div>
                 <div class="card-body">
-                    <form id="text-form">
-                        <div class="form-group">
+                <form id="text-form">
+                    <div class="form-group">
                             <label for="text-input">Text Content</label>
-                            <textarea id="text-input" name="text" rows="4" placeholder="Enter any text you want to encode in QR code..." required></textarea>
+                        <textarea id="text-input" name="text" rows="4" placeholder="Enter any text you want to encode in QR code..." required></textarea>
                         </div>
                         <button type="submit" class="btn">
                             <span id="text-btn-text">Generate QR Code</span>
@@ -609,12 +609,12 @@
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
 
-        <div id="result" class="result" style="display: none;">
+            <div id="result" class="result" style="display: none;">
             <h3>✨ Generated QR Code</h3>
-            <div class="qr-code">
-                <img id="qr-image" src="" alt="QR Code">
+                <div class="qr-code">
+                    <img id="qr-image" src="" alt="QR Code">
             </div>
             <div id="qr-info" class="qr-info"></div>
             <button class="btn btn-secondary" onclick="downloadQR()">📥 Download QR Code</button>
