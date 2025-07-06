@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Inventory App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --accent-color: #06b6d4;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem 2rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--surface);
+            border-radius: 0.75rem;
+            padding: 0.25rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            border: none;
+            background: transparent;
+        }
+
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--surface);
+            color: var(--text-primary);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .result {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 1rem;
+            text-align: center;
+            border: 1px solid #bae6fd;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .qr-code {
+            margin: 1.5rem 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .qr-code img {
+            max-width: 300px;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            border: 4px solid white;
+        }
+
+        .qr-info {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .error {
+            color: #dc2626;
+            background: #fef2f2;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            border: 1px solid #fecaca;
+            font-weight: 500;
+        }
+
+        .success {
+            color: #059669;
+            background: #f0fdf4;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            border: 1px solid #bbf7d0;
+            font-weight: 500;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .feature {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .feature p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 0.5rem;
+            border: 1px solid #bae6fd;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .export-buttons .btn {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .inventory-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .inventory-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .inventory-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .inventory-item:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .inventory-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .inventory-item-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1.125rem;
+        }
+
+        .inventory-item-id {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .inventory-item-details {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .inventory-detail {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .detail-value {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .inventory-item-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            font-style: italic;
+        }
+
+        .inventory-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .inventory-item-actions .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .inventory-item-date {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .inventory-item.hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                margin-bottom: 0.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Paint Inventory</h1>
+            <p>Manage your paint collection with QR codes</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('asset')">🎨 Add Paint</button>
+            <button class="tab" onclick="switchTab('text')">📝 Text QR</button>
+            <button class="tab" onclick="switchTab('inventory')">📋 Paint Inventory</button>
+        </div>
+
+        <div class="card">
+            <div id="asset-tab" class="tab-content active">
+                <div class="card-header">
+                    <h2>Add New Paint</h2>
+                </div>
+                <div class="card-body">
+                    <form id="asset-form">
+                        <div class="form-group">
+                            <label for="asset-name">Paint Name</label>
+                            <input type="text" id="asset-name" name="name" placeholder="e.g., Cadmium Red, Ultramarine Blue" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="paint-manufacturer">Manufacturer</label>
+                            <select id="paint-manufacturer" name="manufacturer" required>
+                                <option value="">Select Manufacturer</option>
+                                <option value="Ronan Paints">Ronan Paints</option>
+                                <option value="1Shot Paints">1Shot Paints</option>
+                                <option value="Alphanmel">Alphanmel</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="paint-size">Paint Size</label>
+                            <select id="paint-size" name="size" required>
+                                <option value="">Select Size</option>
+                                <option value="5oz Bottle">5oz Bottle</option>
+                                <option value="One Quarter Pint">One Quarter Pint</option>
+                                <option value="One Half Pint">One Half Pint</option>
+                                <option value="1 US Pint">1 US Pint</option>
+                                <option value="One Quart">One Quart</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="asset-description">Additional Notes</label>
+                            <textarea id="asset-description" name="description" rows="3" placeholder="e.g., High gloss finish, excellent coverage, fast drying"></textarea>
+                        </div>
+                        <button type="submit" class="btn">
+                            <span id="asset-btn-text">Add Paint & Generate QR</span>
+                            <span id="asset-btn-loading" class="loading" style="display: none;"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="text-tab" class="tab-content">
+                <div class="card-header">
+                    <h2>Generate QR Code for Text</h2>
+                </div>
+                <div class="card-body">
+                    <form id="text-form">
+                        <div class="form-group">
+                            <label for="text-input">Text Content</label>
+                            <textarea id="text-input" name="text" rows="4" placeholder="Enter any text you want to encode in QR code..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn">
+                            <span id="text-btn-text">Generate QR Code</span>
+                            <span id="text-btn-loading" class="loading" style="display: none;"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="inventory-tab" class="tab-content">
+                <div class="card-header">
+                    <h2>📋 Paint Inventory</h2>
+                </div>
+                <div class="card-body">
+                    <div class="inventory-controls">
+                        <div class="search-box">
+                            <input type="text" id="inventory-search" placeholder="Search paints by name or description..." onkeyup="filterInventory()">
+                        </div>
+                        <button class="btn btn-secondary" onclick="clearInventory()">🗑️ Clear All</button>
+                    </div>
+                    
+                    <div class="inventory-list" id="inventory-list">
+                        <div class="empty-state">
+                            <div class="empty-icon">🎨</div>
+                            <h3>No paints yet</h3>
+                            <p>Add your first paint to see it here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="result" class="result" style="display: none;">
+            <h3>✨ Generated QR Code</h3>
+            <div class="qr-code">
+                <img id="qr-image" src="" alt="QR Code">
+            </div>
+            <div id="qr-info" class="qr-info"></div>
+            <button class="btn btn-secondary" onclick="downloadQR()">📥 Download QR Code</button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>📊 Reports & Export</h2>
+            </div>
+            <div class="card-body">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" id="asset-count">0</div>
+                        <div class="stat-label">Paints</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="text-count">0</div>
+                        <div class="stat-label">Text QR Codes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="total-count">0</div>
+                        <div class="stat-label">Total Items</div>
+                    </div>
+                </div>
+                <div class="export-buttons">
+                    <button class="btn btn-secondary" onclick="exportAssetReport()">
+                        📊 Export Paint Report (Excel)
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportTextReport()">
+                        📝 Export Text Report (Excel)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🎨</div>
+                <h3>Paint Management</h3>
+                <p>Organize your paint collection with automatic ID generation</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📱</div>
+                <h3>Mobile Friendly</h3>
+                <p>Works perfectly on all devices and screen sizes</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <h3>Excel Export</h3>
+                <p>Export your paint inventory to Excel for easy management</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000';
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        document.getElementById('asset-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const assetData = {
+                name: formData.get('name'),
+                manufacturer: formData.get('manufacturer'),
+                size: formData.get('size'),
+                description: formData.get('description')
+            };
+
+            // Show loading state
+            const btnText = document.getElementById('asset-btn-text');
+            const btnLoading = document.getElementById('asset-btn-loading');
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-block';
+
+            try {
+                const response = await fetch(`${API_BASE}/generate-qr`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(assetData)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showResult(result.qrCode, `Paint: ${result.asset.name} (${result.asset.id}) - ${result.asset.manufacturer} ${result.asset.size}`);
+                    loadStats(); // Refresh stats after generating QR code
+                    loadInventory(); // Refresh inventory after generating QR code
+                } else {
+                    showError(result.error);
+                }
+            } catch (error) {
+                showError('Failed to connect to server. Make sure the server is running.');
+            } finally {
+                // Hide loading state
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+            }
+        });
+
+        document.getElementById('text-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const textData = {
+                text: formData.get('text')
+            };
+
+            // Show loading state
+            const btnText = document.getElementById('text-btn-text');
+            const btnLoading = document.getElementById('text-btn-loading');
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-block';
+
+            try {
+                const response = await fetch(`${API_BASE}/generate-qr-text`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(textData)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showResult(result.qrCode, `Text: ${result.text}`);
+                    loadStats(); // Refresh stats after generating QR code
+                } else {
+                    showError(result.error);
+                }
+            } catch (error) {
+                showError('Failed to connect to server. Make sure the server is running.');
+            } finally {
+                // Hide loading state
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+            }
+        });
+
+        function showResult(qrCodeDataUrl, info) {
+            const resultDiv = document.getElementById('result');
+            const qrImage = document.getElementById('qr-image');
+            const qrInfo = document.getElementById('qr-info');
+            
+            qrImage.src = qrCodeDataUrl;
+            qrInfo.textContent = info;
+            resultDiv.style.display = 'block';
+            
+            // Scroll to result
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showError(message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<div class="error">${message}</div>`;
+            resultDiv.style.display = 'block';
+        }
+
+        function downloadQR() {
+            const qrImage = document.getElementById('qr-image');
+            const link = document.createElement('a');
+            link.download = 'qr-code.png';
+            link.href = qrImage.src;
+            link.click();
+        }
+
+        // Check if server is running and load stats
+        fetch(`${API_BASE}/health`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Server is running:', data);
+                loadStats();
+                loadInventory();
+            })
+            .catch(error => {
+                console.log('Server is not running. Please start the server first.');
+            });
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/stats`);
+                const stats = await response.json();
+                
+                document.getElementById('asset-count').textContent = stats.assetCount;
+                document.getElementById('text-count').textContent = stats.textCount;
+                document.getElementById('total-count').textContent = stats.totalCount;
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+
+        async function exportAssetReport() {
+            try {
+                const response = await fetch(`${API_BASE}/export-assets`);
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'qr-inventory-report.xlsx';
+                    link.click();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    const error = await response.json();
+                    alert('Export failed: ' + error.error);
+                }
+            } catch (error) {
+                alert('Failed to export asset report. Please try again.');
+            }
+        }
+
+        async function exportTextReport() {
+            try {
+                const response = await fetch(`${API_BASE}/export-texts`);
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'qr-text-report.xlsx';
+                    link.click();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    const error = await response.json();
+                    alert('Export failed: ' + error.error);
+                }
+            } catch (error) {
+                alert('Failed to export text report. Please try again.');
+            }
+        }
+
+        async function loadInventory() {
+            try {
+                const response = await fetch(`${API_BASE}/inventory`);
+                const inventory = await response.json();
+                displayInventory(inventory);
+            } catch (error) {
+                console.error('Failed to load inventory:', error);
+                displayInventory([]);
+            }
+        }
+
+        function displayInventory(inventory) {
+            const inventoryList = document.getElementById('inventory-list');
+            
+            if (inventory.length === 0) {
+                inventoryList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🎨</div>
+                        <h3>No paints yet</h3>
+                        <p>Add your first paint to see it here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            inventoryList.innerHTML = inventory.map(asset => `
+                <div class="inventory-item" data-search="${asset.name.toLowerCase()} ${asset.id.toLowerCase()} ${asset.manufacturer.toLowerCase()} ${asset.size.toLowerCase()} ${asset.description.toLowerCase()}">
+                    <div class="inventory-item-header">
+                        <div class="inventory-item-title">${asset.name}</div>
+                        <div class="inventory-item-id">${asset.id}</div>
+                    </div>
+                    <div class="inventory-item-details">
+                        <div class="inventory-detail">
+                            <span class="detail-label">Manufacturer:</span>
+                            <span class="detail-value">${asset.manufacturer}</span>
+                        </div>
+                        <div class="inventory-detail">
+                            <span class="detail-label">Size:</span>
+                            <span class="detail-value">${asset.size}</span>
+                        </div>
+                    </div>
+                    <div class="inventory-item-description">${asset.description || 'No additional notes'}</div>
+                    <div class="inventory-item-actions">
+                        <button class="btn" onclick="reprintQR('${asset.id}', '${asset.name}', '${asset.manufacturer}', '${asset.size}', '${asset.description}')">
+                            🔄 Reprint QR
+                        </button>
+                        <button class="btn btn-secondary" onclick="downloadAssetQR('${asset.id}', '${asset.name}', '${asset.manufacturer}', '${asset.size}', '${asset.description}')">
+                            📥 Download
+                        </button>
+                    </div>
+                    <div class="inventory-item-date">Added: ${new Date(asset.generatedAt).toLocaleDateString()}</div>
+                </div>
+            `).join('');
+        }
+
+        function filterInventory() {
+            const searchTerm = document.getElementById('inventory-search').value.toLowerCase();
+            const items = document.querySelectorAll('.inventory-item');
+            
+            items.forEach(item => {
+                const searchData = item.getAttribute('data-search');
+                if (searchData.includes(searchTerm)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        async function reprintQR(id, name, manufacturer, size, description) {
+            try {
+                const assetData = { name, manufacturer, size, description };
+                const response = await fetch(`${API_BASE}/generate-qr`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(assetData)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showResult(result.qrCode, `Paint: ${result.asset.name} (${result.asset.id}) - ${result.asset.manufacturer} ${result.asset.size}`);
+                    // Switch to the result view
+                    document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    showError(result.error);
+                }
+            } catch (error) {
+                showError('Failed to reprint QR code. Please try again.');
+            }
+        }
+
+        async function downloadAssetQR(id, name, manufacturer, size, description) {
+            try {
+                const assetData = { name, manufacturer, size, description };
+                const response = await fetch(`${API_BASE}/generate-qr`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(assetData)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const link = document.createElement('a');
+                    link.download = `qr-${id}-${name.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.png`;
+                    link.href = result.qrCode;
+                    link.click();
+                } else {
+                    showError(result.error);
+                }
+            } catch (error) {
+                showError('Failed to download QR code. Please try again.');
+            }
+        }
+
+        async function clearInventory() {
+            if (confirm('Are you sure you want to clear all paint inventory? This action cannot be undone.')) {
+                try {
+                    const response = await fetch(`${API_BASE}/clear-inventory`, {
+                        method: 'POST'
+                    });
+                    
+                    if (response.ok) {
+                        loadInventory();
+                        loadStats();
+                        alert('Paint inventory cleared successfully!');
+                    } else {
+                        const error = await response.json();
+                        alert('Failed to clear paint inventory: ' + error.error);
+                    }
+                } catch (error) {
+                    alert('Failed to clear paint inventory. Please try again.');
+                }
+            }
+        }
+    </script>
+</body>
+</html> 
